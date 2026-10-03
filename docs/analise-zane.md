@@ -73,7 +73,7 @@ Este é o ponto que mais ameaça a loja continuar vendendo, mais do que qualquer
 - **São 5 vitrines quase iguais em sequência** (destaque, oferta, promoção, novidades, mais vendidos), cerca de 60 cards no total. Os títulos são "Air Max Dn", "Air Max Tn 3"… ou seja, a vitrine virou categoria. Não há narrativa ("por que comprar aqui?") nem curadoria ("o que está em alta").
 - O "por que confiar" (Pix, 12x, atendimento, segurança) só aparece **no meio da página**.
 - O texto de boas-vindas é genérico ("Estilo, conforto e performance reunidos em um só lugar").
-- Os ícones dos banners informativos e as fotos dos depoimentos usam o **placeholder vazio do tema** (`empty-placeholder.png`), ou seja, imagens nunca configuradas.
+- ~~Ícones e fotos dos depoimentos em placeholder~~ *(corrigido na revisão: as imagens existem e são carregadas sob demanda; o placeholder só aparece até carregar).*
 - O slider no fim da página ("Carrossel 1", "Carrossel 2" como texto alternativo) parece ter sobrado de configuração.
 - O produto único no fim da home repete um item que já aparece numa vitrine.
 
@@ -107,11 +107,11 @@ Pelo HTML, cada card mostra:
 - etiqueta "-40% OFF"
 - nome
 - preço "de/por" + preço no Pix + parcelas
-- **seletor de tamanho e de perfume dentro do card** + botão "Comprar" (quickshop)
+- botão de compra rápida (quickshop), que abre um modal com tamanho e perfume
 
 **Problemas:**
 - 🔴 **Peso enorme.** Cada card de tênis carrega um JSON com **todas as combinações de tamanho × perfume** (6 tamanhos × 9 perfumes = **54 variantes**, cada uma com tabela de parcelas). São cerca de **250 KB por card**. A home tem 64 cards e **9,7 MB de HTML** (ver A.13).
-- ⚠️ O seletor de perfume aparece **no card**: 9 nomes por produto deixam a vitrine poluída.
+- ⚠️ *(corrigido na revisão: o seletor de perfume fica escondido no card e só aparece no modal de compra rápida.)* O brinde, porém, não aparece em lugar nenhum da vitrine. → resolvido pelo selo "+ Perfume" do Zane Night.
 - ⚠️ Os tokens do tema têm `--label-background: #ffffff` e `--label-foreground: #ffffff`, ou seja, **etiqueta branca com texto branco**. Vale confirmar visualmente se a etiqueta de desconto está legível.
 - ⚠️ Nomes duplicados: há **4 produtos "Real Madrid - Away 25/26"** diferentes (versões distintas com o mesmo nome) e um "Juventus - Home 25/26" cuja URL é `chelsea-home-25-26`. Isso confunde o cliente e o Google.
 - ✅ Desconto Pix explícito e preço "de/por" claros.
@@ -128,7 +128,7 @@ Pelo HTML, cada card mostra:
 ### A.8 Busca
 
 - ✅ Nativa, rápida e visível. "tn" e "air max 95" retornam resultados com filtros e ordenação.
-- ⚠️ Não há sugestões enquanto o cliente digita (autocomplete com foto) nem "buscas populares".
+- ✅ *(corrigido na revisão)* O tema já tem sugestões enquanto o cliente digita (`js-search-form-suggestions`). Falta "buscas populares".
 - ⚠️ A busca "tn" depende de o nome conter "TN". Os produtos se chamam "Air Max **Plus**", então a correspondência com a gíria "TN" é parcial. Vale incluir sinônimos e tags nos produtos.
 
 ### A.9 Filtros e categorias
@@ -175,14 +175,15 @@ Pelo HTML, cada card mostra:
 - **Sem Google Analytics 4, Google Ads, Meta Pixel ou TikTok Pixel configurados** (`ga4_measurement_id: ""`). A loja não mede funil nem consegue fazer remarketing. Para um público que vem do Instagram e do TikTok, isso é dinheiro na mesa.
 - Ainda está no **subdomínio** `lojavirtualnuvem.com.br`, sem domínio próprio. Um domínio próprio aumenta a confiança e a memorização.
 - Erro de texto no "Sobre nós": "Confie na Zane **do** para uma compra…".
-- Depoimentos: 3 textos quase idênticos, sem foto, data ou produto. Parecem fabricados e **reduzem** a confiança.
+- Depoimentos: 3 textos quase idênticos, sem data nem produto. Parecem genéricos e **reduzem** a confiança.
+- **Fotos das camisas geradas por IA:** os arquivos se chamam `chatgpt-image-…`. Quem compra camisa quer ver a peça real. Isso afeta a confiança e pode gerar devolução quando a peça real for diferente da imagem.
 
 ### A.15 O que faz a loja parecer "genérica"
 
 1. Tema Toluca com cores e seções padrão, sem nada customizado fora dos banners
 2. Menu de páginas institucionais em vez de produto
 3. 5 vitrines idênticas com títulos que são nomes de categoria
-4. Ícones e fotos placeholder
+4. Depoimentos genéricos e fotos de produto geradas por IA
 5. Textos de modelo (boas-vindas, descrições, newsletter, depoimentos)
 6. Subdomínio da Nuvemshop
 7. O roxo da campanha some quando o banner acaba
@@ -295,7 +296,7 @@ Cada opção muda a operação (estoque do brinde, separação do pedido), entã
 4. Menu orientado a produto + "Compre pelo tamanho"
 5. Roxo Zane como acento + títulos condensados + selo de brinde + faixa de confiança
 6. Home enxuta (hero → categorias → drop → mais vendidos → kit → prova social → newsletter)
-7. Ícones reais nos informativos. Remover placeholders e depoimentos genéricos
+7. Trocar depoimentos genéricos por avaliações reais e as fotos de IA por fotos reais
 8. CTAs com texto e newsletter com oferta concreta
 
 **Fase 2: performance e página de produto**
@@ -352,4 +353,10 @@ Cada opção muda a operação (estoque do brinde, separação do pedido), entã
 
 ---
 
-**Próximo passo:** escolher quais itens das fases 0 e 1 entram primeiro. Antes de qualquer alteração em código, vou precisar: (1) saber se o seu plano permite editar o código do tema (Twig/FTP) ou só CSS/JS externos, (2) prints do mobile para confirmar a seção A.11 e (3) a sua decisão sobre o perfume (seção 4).
+---
+
+## Implementação
+
+O pacote **Zane Night** (CSS + JS) já implementa o que dá para fazer sem login na loja: identidade visual, faixa de benefícios, atalhos de categoria, "Qual seu número?", selo e bloco de brinde, wishlist Minha Zane, vistos recentemente, "Complete o kit", abas de informação, barra de compra fixa, story e drop. Ver `zane-theme/README.md` e `docs/instalacao.md`. O que depende do painel está na Parte 2 do guia de instalação.
+
+**Próximo passo (original):** escolher quais itens das fases 0 e 1 entram primeiro. Antes de qualquer alteração em código, vou precisar: (1) saber se o seu plano permite editar o código do tema (Twig/FTP) ou só CSS/JS externos, (2) prints do mobile para confirmar a seção A.11 e (3) a sua decisão sobre o perfume (seção 4).
